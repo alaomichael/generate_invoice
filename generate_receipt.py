@@ -143,10 +143,6 @@ def generate_receipt(data):
 
 # Main Function to Read CSV, Group by Receipt, and Generate PDF
 if __name__ == "__main__":
-    # filename = csv_file_path  # "receipt_data.csv"  # CSV file with receipt data
-    # data = read_csv(filename)
-    # grouped_data = group_by_receipt(data)
-    # generate_receipt(grouped_data)
     try:
     # Main execution code
         csv_file_path = sys.argv[1]
