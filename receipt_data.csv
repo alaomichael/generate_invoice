@@ -1,0 +1,5 @@
+item_description,quantity,unit_price,receipt_no,customer_name,customer_address,payment_date,payment_method
+Item 1,2,5000,001,John Doe,123 Main St,2024-11-15,Bank Transfer
+Item 2,1,10000
+Item A,3,2000,002,Jane Smith,456 Oak St,2024-11-16,Credit Card,
+Item B,1,4000
