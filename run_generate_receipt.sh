@@ -9,12 +9,23 @@ if [ ! -f "$CSV_FILE" ]; then
     exit 1
 fi
 
+# # Run the Python script
+# python3 generate_receipt.py "$CSV_FILE"
+
+# # Check if the Python script ran successfully
+# if [ $? -eq 0 ]; then
+#     echo "Receipts generated successfully!"
+# else
+#     echo "Error generating receipts!"
+# fi
+
 # Run the Python script
-python3 generate_receipt.py "$CSV_FILE"
+python generate_receipt.py "$CSV_FILE" 2>&1 | tee error_log.txt
 
 # Check if the Python script ran successfully
 if [ $? -eq 0 ]; then
     echo "Receipts generated successfully!"
 else
-    echo "Error generating receipts!"
+    echo "Error generating receipts! See error_log.txt for details."
 fi
+

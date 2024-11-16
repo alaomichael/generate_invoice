@@ -2,6 +2,7 @@ import sys
 import csv
 from fpdf import FPDF
 from collections import defaultdict
+import traceback
 
 # Retrieve the CSV file path from the command-line arguments
 csv_file_path = sys.argv[1]
@@ -36,12 +37,13 @@ def read_csv(filename):
 def group_by_receipt(data):
     grouped = defaultdict(list)
     receipt_info = {}
-    
+    last_receipt_no = None  # Keep track of the last valid receipt number
+
     for row in data:
-        receipt_no = row['receipt_no']
-        
-        if receipt_no and receipt_no not in receipt_info:
-            # Save receipt info (first row for each receipt)
+        receipt_no = row.get('receipt_no')
+
+        if receipt_no:  # New receipt, save details
+            last_receipt_no = receipt_no
             receipt_info[receipt_no] = {
                 "customer_name": row['customer_name'],
                 "customer_address": row['customer_address'],
@@ -49,15 +51,19 @@ def group_by_receipt(data):
                 "payment_method": row['payment_method']
             }
 
-        # Add missing receipt number and payment method to the row
-        if not row['receipt_no']:
-            row['receipt_no'] = receipt_no
-            row['payment_method'] = receipt_info[receipt_no]["payment_method"]
-        
-        grouped[receipt_no].append(row)
-    
-    print("Grouped Data:", grouped)  # Debugging line to print grouped data
+        # Ensure the row belongs to the last valid receipt
+        if last_receipt_no:
+            if not receipt_no:  # Fill in missing details
+                row['receipt_no'] = last_receipt_no
+                row['customer_name'] = receipt_info[last_receipt_no]['customer_name']
+                row['customer_address'] = receipt_info[last_receipt_no]['customer_address']
+                row['payment_date'] = receipt_info[last_receipt_no]['payment_date']
+                row['payment_method'] = receipt_info[last_receipt_no]['payment_method']
+
+            grouped[last_receipt_no].append(row)
+
     return grouped
+
 
 # Generate receipt
 def generate_receipt(data):
@@ -137,7 +143,17 @@ def generate_receipt(data):
 
 # Main Function to Read CSV, Group by Receipt, and Generate PDF
 if __name__ == "__main__":
-    filename = csv_file_path  # "receipt_data.csv"  # CSV file with receipt data
-    data = read_csv(filename)
-    grouped_data = group_by_receipt(data)
-    generate_receipt(grouped_data)
+    # filename = csv_file_path  # "receipt_data.csv"  # CSV file with receipt data
+    # data = read_csv(filename)
+    # grouped_data = group_by_receipt(data)
+    # generate_receipt(grouped_data)
+    try:
+    # Main execution code
+        csv_file_path = sys.argv[1]
+        data = read_csv(csv_file_path)
+        grouped_data = group_by_receipt(data)
+        generate_receipt(grouped_data)
+    except Exception as e:
+        print("Error:", e)
+        traceback.print_exc()
+        sys.exit(1)
